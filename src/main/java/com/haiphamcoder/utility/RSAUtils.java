@@ -40,15 +40,22 @@ public class RSAUtils {
     }
 
     public static String encrypt(String data, String base64EncodedPublicKey) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, getPublicKey(base64EncodedPublicKey));
-        return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes()));
+        return encrypt(data.getBytes(), getPublicKey(base64EncodedPublicKey));
+    }
 
+    public static String encrypt(byte[] data, PublicKey publicKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        return Base64.getEncoder().encodeToString(cipher.doFinal(data));
     }
 
     public static String decrypt(String data, String base64EncodedPrivateKey) throws Exception {
+        return new String(decrypt(data.getBytes(), getPrivateKey(base64EncodedPrivateKey)));
+    }
+
+    public static byte[] decrypt(byte[] data, PrivateKey privateKey) throws Exception {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.DECRYPT_MODE, getPrivateKey(base64EncodedPrivateKey));
-        return new String(cipher.doFinal(Base64.getDecoder().decode(data.getBytes())));
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        return cipher.doFinal(Base64.getDecoder().decode(data));
     }
 }

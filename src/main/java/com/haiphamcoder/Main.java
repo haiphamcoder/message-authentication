@@ -10,6 +10,6 @@ public class Main {
         String privateKey = rsaKeyPairGenerator.getPrivateKey();
 
         FileUtils.encryptFile("src/Test.txt", publicKey);
-        FileUtils.decryptFile("src/Test.txt.encrypted", privateKey);
+        FileUtils.decryptFile("src/Test.txt.encrypted", privateKey, "src/Test.txt.decrypted");
     }
 }

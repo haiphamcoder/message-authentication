@@ -1,0 +1,94 @@
+using UnityEngine;
+
+public class PlayerAttack : MonoBehaviour
+{
+    [SerializeField] private float attackCooldown;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private Transform flamePoint;
+    [SerializeField] private GameObject[] fireballs;
+    [SerializeField] private GameObject[] flame;
+
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private BoxCollider2D collision;
+
+    private Animator anim;
+    private Animator animFlamePoint;
+    private PlayerMovement playerMovement;
+    private float cooldownTimer = Mathf.Infinity;
+
+    private Mana mana;
+
+    private float maxFlameScaleX = 2f;
+
+    private void Awake()
+    {
+
+        anim = GetComponent<Animator>();
+        playerMovement = GetComponent<PlayerMovement>();
+        mana = GetComponent<Mana> ();
+    }
+
+    private void Update()
+    {
+        //Input.GetMouseButton(0)
+        if (Input.GetKeyDown(KeyCode.Q) && cooldownTimer > attackCooldown && playerMovement.canAttack())
+            Attack();
+
+        if (Input.GetKeyDown(KeyCode.W) && mana.canCast() && cooldownTimer > attackCooldown && playerMovement.canAttack())
+        {
+            CastSpell();
+        }
+
+        cooldownTimer += Time.deltaTime;
+    }
+
+    private void CastSpell() {
+
+        anim.SetTrigger("castSpell");
+        cooldownTimer = 0;
+
+        flame[0].transform.position = flamePoint.position;
+        flame[0].SetActive(true);
+
+                // Lấy các đối tượng trong vùng tấn công sử dụng Box Collider
+                Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(flamePoint.position, new Vector2(7f, 1f), 0, enemyLayer);
+
+                        // Gây sát thương cho các đối tượng trong vùng tấn công
+                        foreach (Collider2D enemy in hitEnemies)
+                        {
+                            // Lấy component Health từ đối tượng va chạm
+                            Health enemyHealth = enemy.GetComponent<Health>();
+
+                            // Gọi hàm TakeDamage để gây sát thương
+                            if (enemyHealth != null)
+                            {
+                                enemyHealth.TakeDamage(10);
+
+                        // Điều chỉnh số liệu sát thương tùy vào yêu cầu
+                            }
+                        }
+
+        // Sử dụng mana khi cast spell
+        mana.useMana(1);
+
+
+    }
+
+    private void Attack()
+    {
+        anim.SetTrigger("attack");
+        cooldownTimer = 0;
+
+        fireballs[FindFireball()].transform.position = firePoint.position;
+        fireballs[FindFireball()].GetComponent<Projectile>().SetDirection(Mathf.Sign(transform.localScale.x));
+    }
+    private int FindFireball()
+    {
+        for (int i = 0; i < fireballs.Length; i++)
+        {
+            if (!fireballs[i].activeInHierarchy)
+                return i;
+        }
+        return 0;
+    }
+}
