@@ -40,8 +40,8 @@ public class FileUtils {
         return result;
     }
 
-    public static void encryptFile(String filePath, String base64EncodedPublicKey) throws Exception {
-        String content = readFile(filePath);
+    public static void encryptFile(String inputFilePath, String base64EncodedPublicKey, String outputFilePath) throws Exception {
+        String content = readFile(inputFilePath);
 
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(128);
@@ -49,7 +49,7 @@ public class FileUtils {
 
         String cipherText = AESUtils.encrypt(content.getBytes(), secretKey);
         String encryptedSecretKey = RSAUtils.encrypt(secretKey.getEncoded(), RSAUtils.getPublicKey(base64EncodedPublicKey));
-        writeFile(filePath + ".encrypted", encryptedSecretKey + "\n" + cipherText);
+        writeFile(outputFilePath, encryptedSecretKey + "\n" + cipherText);
     }
 
     public static void decryptFile(String inputFilePath, String base64EncodedPrivateKey, String outputFilePath) throws Exception {
