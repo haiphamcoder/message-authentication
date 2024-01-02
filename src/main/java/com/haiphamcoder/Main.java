@@ -8,8 +8,5 @@ public class Main {
         RSAKeyPairGenerator rsaKeyPairGenerator = new RSAKeyPairGenerator();
         String publicKey = rsaKeyPairGenerator.getPublicKey();
         String privateKey = rsaKeyPairGenerator.getPrivateKey();
-
-        FileUtils.encryptFile("src/Test.txt", publicKey, "src/Test.txt.encrypted");
-        FileUtils.decryptFile("src/Test.txt.encrypted", privateKey, "src/Test.txt.decrypted");
     }
 }
